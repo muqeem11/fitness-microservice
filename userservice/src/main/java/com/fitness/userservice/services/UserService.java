@@ -1,11 +1,13 @@
 package com.fitness.userservice.services;
 
 import com.fitness.userservice.UserRepository;
+import com.fitness.userservice.controller.UserController;
 import com.fitness.userservice.dto.RegisterRequest;
 import com.fitness.userservice.dto.UserResponse;
 
 import com.fitness.userservice.models.User;
 import lombok.AllArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,16 +30,28 @@ public class UserService {
 
 
         User savedUser=repository.save(user);
-        UserResponse userResponse=new UserResponse();
-        userResponse.setId(savedUser.getId());
-        userResponse.setEmail(savedUser.getEmail());
-        userResponse.setFirstname(savedUser.getFirstname());
-        userResponse.setLastname(savedUser.getLastname());
-        userResponse.setPassword(savedUser.getPassword());
-        userResponse.setUpdatedAT(savedUser.getUpdatedAT());
-        userResponse.setCreatedAt(savedUser.getCreatedAt());
-        return  userResponse;
+        return getUserResponse(savedUser);
 
 
+    }
+
+    public UserResponse getUserProfile(String userId) {
+        User user=repository.findById(userId).orElseThrow(()->new RuntimeException("User Not found"));
+
+        return getUserResponse(user);
+
+    }
+
+    @NonNull
+    private UserResponse getUserResponse(User user) {
+        UserResponse userResponse =new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setFirstname(user.getFirstname());
+        userResponse.setLastname(user.getLastname());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setUpdatedAT(user.getUpdatedAT());
+        userResponse.setCreatedAt(user.getCreatedAt());
+        return userResponse;
     }
 }
