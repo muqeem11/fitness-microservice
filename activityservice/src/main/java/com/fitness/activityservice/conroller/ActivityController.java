@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ActivityController {
 
-    private   ActivityService activityService;
+    private ActivityService activityService;
+
     @PostMapping
-    public ResponseEntity<ActivityResponse> trackActivity(@RequestBody ActivityResquest request){
+    public ResponseEntity<ActivityResponse> trackActivity(@RequestBody ActivityResquest request) {
         return ResponseEntity.ok(activityService.trackActivity(request));
     }
 }

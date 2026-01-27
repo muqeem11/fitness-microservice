@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ActivityService {
     private final ActivityRepository activityRepository;
+
     public ActivityResponse trackActivity(ActivityResquest request) {
-        Activity activity =Activity.builder()
+        Activity activity = Activity.builder()
                 .userId(request.getUserId())
                 .type(request.getType())
                 .duration(request.getDuration())
@@ -27,16 +28,16 @@ public class ActivityService {
 
     private ActivityResponse mapToResponse(Activity savedActivity) {
         ActivityResponse response = new ActivityResponse();
-         response.setId(savedActivity.getId());
-         response.setUserId(savedActivity.getUserId());
-         response.setType(savedActivity.getType());
-         response.setDuration(savedActivity.getDuration());
-         response.setCaloriesBurned(savedActivity.getCaloriesBurned());
-         response.setStartTime(savedActivity.getStartTime());
-         response.setAdditionalMetrics(savedActivity.getAdditionalMetrics());
-         response.setStartTime(savedActivity.getStartTime());
-         response.setUpdatedAt(savedActivity.getUpdatedAt());
-         return response;
+        response.setId(savedActivity.getId());
+        response.setUserId(savedActivity.getUserId());
+        response.setType(savedActivity.getType());
+        response.setDuration(savedActivity.getDuration());
+        response.setCaloriesBurned(savedActivity.getCaloriesBurned());
+        response.setStartTime(savedActivity.getStartTime());
+        response.setAdditionalMetrics(savedActivity.getAdditionalMetrics());
+        response.setStartTime(savedActivity.getStartTime());
+        response.setUpdatedAt(savedActivity.getUpdatedAt());
+        return response;
 
     }
 }
