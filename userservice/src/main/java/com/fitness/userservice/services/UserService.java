@@ -54,4 +54,9 @@ public class UserService {
         userResponse.setCreatedAt(user.getCreatedAt());
         return userResponse;
     }
+
+    public Boolean existByUserId(String userId) {
+        return repository.existsById(userId);
+
+    }
 }
