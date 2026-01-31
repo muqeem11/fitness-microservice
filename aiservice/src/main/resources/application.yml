@@ -2,6 +2,14 @@ spring:
   application:
     name: AISERVICE
 
+  mongodb:
+    uri: mongodb://localhost:27017/airecommendationfitness
+
+    database: airecommendationfitness
+
+
+
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:

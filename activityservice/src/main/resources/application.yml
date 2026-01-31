@@ -1,11 +1,9 @@
 spring:
   application:
     name: ACTIVITYSERVICE
-    data:
-      mongodb:
-        uri: mongodb://localhost:27017/aiactivityfitness
-        database: aiactivityfitness
-
+  mongodb:
+    uri: mongodb://localhost:27017/aiactivityfitness
+    database: aiactivityfitness
   kafka:
     bootstrap-servers: localhost:9092
     producer:
