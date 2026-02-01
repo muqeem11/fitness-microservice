@@ -24,40 +24,46 @@ public class ActivityAiService {
     public Recommendation generateRecommendation(Activity activity){
         String prompt= createPromptForActivity(activity);
         String aiResponse=geminiService.getRecommendation(prompt);
-        log.info("RESPONSE FROM AI{}", aiResponse);
+        log.info("RESPONSE FROM AI: {}", aiResponse);
         return processAIResponse(activity,aiResponse);
 
     }
 
     private Recommendation processAIResponse(Activity activity, String aiResponse) {
-        try{
+        try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode= mapper.readTree(aiResponse);
-            JsonNode textNode = rootNode.path("candidates")
-                    .get(0)
+            JsonNode rootNode = mapper.readTree(aiResponse);
+
+            JsonNode candidates = rootNode.path("candidates");
+            if (!candidates.isArray() || candidates.isEmpty()) {
+                throw new IllegalStateException("No candidates returned from AI");
+            }
+
+            JsonNode textNode = candidates.get(0)
                     .path("content")
-                    .get("parts")
+                    .path("parts")
                     .get(0)
                     .path("text");
-            String jsonContent= textNode.asText()
-                    .replace("```json\\n","")
-                    .replace("\\n```","")
+
+            String jsonContent = textNode.asText()
+                    .replaceAll("```json", "")
+                    .replaceAll("```", "")
                     .trim();
 
-//            log.info("RESPONSE FROM CLEANED AI{}", jsonContent);
-              JsonNode analysisJson= mapper.readTree(jsonContent);
-              JsonNode analysisNode=analysisJson.path("analysis");
-              StringBuilder fullAnalysis=new StringBuilder();
-              addAnalysisSection(fullAnalysis,analysisNode,"overall","Overall: ");
-              addAnalysisSection(fullAnalysis,analysisNode,"pace","Pace: ");
-              addAnalysisSection(fullAnalysis,analysisNode,"heartRate","Heart Rate: ");
-              addAnalysisSection(fullAnalysis,analysisNode,"caloriesBurned","Calories: ");
+            JsonNode analysisJson = mapper.readTree(jsonContent);
+            JsonNode analysisNode = analysisJson.path("analysis");
 
-            List<String> improvements= extractImprovements(analysisJson.path("improvements"));
-            List<String> suggestions= extractSuggestions(analysisJson.path("suggestions"));
-            List<String> safety= extractSafetyGuidelines(analysisJson.path("safety"));
+            StringBuilder fullAnalysis = new StringBuilder();
+            addAnalysisSection(fullAnalysis, analysisNode, "overall", "Overall: ");
+            addAnalysisSection(fullAnalysis, analysisNode, "pace", "Pace: ");
+            addAnalysisSection(fullAnalysis, analysisNode, "heartRate", "Heart Rate: ");
+            addAnalysisSection(fullAnalysis, analysisNode, "caloriesBurned", "Calories: ");
 
-            return  Recommendation.builder()
+            List<String> improvements = extractImprovements(analysisJson.path("improvements"));
+            List<String> suggestions = extractSuggestions(analysisJson.path("suggestions"));
+            List<String> safety = extractSafetyGuidelines(analysisJson.path("safety"));
+
+            return Recommendation.builder()
                     .activityId(activity.getId())
                     .userId(activity.getUserId())
                     .type(activity.getType().toString())
@@ -67,12 +73,13 @@ public class ActivityAiService {
                     .safety(safety)
                     .createdAt(LocalDateTime.now())
                     .build();
-        }catch (Exception e){
-            e.printStackTrace();
-            return createDefaultRecommendation(activity);
 
+        } catch (Exception e) {
+            log.error("Failed to process AI response", e);
+            return createDefaultRecommendation(activity);
         }
     }
+
 
     private Recommendation createDefaultRecommendation(Activity activity) {
         return  Recommendation.builder()
@@ -141,7 +148,7 @@ public class ActivityAiService {
                                    "overall": "Overall analysis here",
                                    "pace": "Pace analysis here",
                                    "heartRate": "Heart rate analysis here",
-                                   "caloriesBurned": "Calories burned analysis here",
+                                   "caloriesBurned": "Calories burned analysis here"
                                 },
                                 "improvements": [
                                   {
@@ -158,7 +165,7 @@ public class ActivityAiService {
                                 "safety":[
                                      "Safety point 1",
                                      "Safety point 2"
-                                ],
+                                ]
                               }
                               Analyze  this activity:
                               Activity Type: %s
