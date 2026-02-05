@@ -1,0 +1,13 @@
+spring:
+  application:
+   name: configserver
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///c:/Users/HP/spring-%20boot-programming/fitness-microservice/configserver/src/main/resources/config/
+
+server:
+  port: 8888
