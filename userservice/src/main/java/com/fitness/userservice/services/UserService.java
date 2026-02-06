@@ -1,7 +1,6 @@
 package com.fitness.userservice.services;
 
 import com.fitness.userservice.UserRepository;
-import com.fitness.userservice.controller.UserController;
 import com.fitness.userservice.dto.RegisterRequest;
 import com.fitness.userservice.dto.UserResponse;
 
@@ -18,7 +17,16 @@ public class UserService {
 
 
         if(repository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("Email already exists");
+            User existingUser=repository.findByEmail(request.getEmail());
+            UserResponse Response =new UserResponse();
+            Response.setId(existingUser.getId());
+            Response.setEmail(existingUser.getEmail());
+            Response.setFirstname(existingUser.getFirstname());
+            Response.setLastname(existingUser.getLastname());
+            Response.setPassword(existingUser.getPassword());
+            Response.setUpdatedAT(existingUser.getUpdatedAT());
+            Response.setCreatedAt(existingUser.getCreatedAt());
+            return Response;
 
         }
 
@@ -27,8 +35,6 @@ public class UserService {
         user.setFirstname(request.getFirstName());
         user.setLastname(request.getLastName());
         user.setPassword(request.getPassword());
-
-
         User savedUser=repository.save(user);
         return getUserResponse(savedUser);
 
@@ -56,7 +62,8 @@ public class UserService {
     }
 
     public Boolean existByUserId(String userId) {
-        return repository.existsById(userId);
+
+        return repository.existsByKeyCloakId(userId);
 
     }
 }
