@@ -32,6 +32,7 @@ public class UserService {
 
         User user=new User();
         user.setEmail(request.getEmail());
+        user.setKeyCloakId(request.getKeycloakId());
         user.setFirstname(request.getFirstName());
         user.setLastname(request.getLastName());
         user.setPassword(request.getPassword());
@@ -52,12 +53,13 @@ public class UserService {
     private UserResponse getUserResponse(User user) {
         UserResponse userResponse =new UserResponse();
         userResponse.setId(user.getId());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setKeyCloakId(user.getKeyCloakId());
         userResponse.setEmail(user.getEmail());
         userResponse.setFirstname(user.getFirstname());
         userResponse.setLastname(user.getLastname());
-        userResponse.setPassword(user.getPassword());
-        userResponse.setUpdatedAT(user.getUpdatedAT());
         userResponse.setCreatedAt(user.getCreatedAt());
+        userResponse.setUpdatedAT(user.getUpdatedAT());
         return userResponse;
     }
 
