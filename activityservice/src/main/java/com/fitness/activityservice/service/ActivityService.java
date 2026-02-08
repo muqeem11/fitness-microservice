@@ -3,12 +3,15 @@ package com.fitness.activityservice.service;
 
 import com.fitness.activityservice.ActivityRepository;
 import com.fitness.activityservice.dto.ActivityResponse;
-import com.fitness.activityservice.dto.ActivityResquest;
+import com.fitness.activityservice.dto.ActivityRequest;
 import com.fitness.activityservice.model.Activity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ public class ActivityService {
     @Value("${kafka.topic.name}")
     private String topicName;
 
-    public ActivityResponse trackActivity(ActivityResquest request) {
+    public ActivityResponse trackActivity(ActivityRequest request) {
         boolean isValidUser = userValidationService.validateUser(request.getUserId());
         if (!isValidUser) {
             throw new RuntimeException("Invalid user id: "+request.getUserId());
@@ -56,6 +59,12 @@ public class ActivityService {
         response.setStartTime(savedActivity.getStartTime());
         response.setUpdatedAt(savedActivity.getUpdatedAt());
         return response;
+    }
 
+    public List<ActivityResponse> getUserActivities(String userId) {
+        List<Activity> activityList= activityRepository.findByUserId(userId);
+        return activityList.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 }
